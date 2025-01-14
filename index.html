@@ -17,43 +17,37 @@
     <nav>
       <a href="#map">Karte</a>
       <a href="#abo">Abos</a>
-      <a href="#terms">AGB</a>
     </nav>
   </header>
 
   <section class="hero">
-    <h2>Willkommen bei ChargeHERO</h2>
-    <p>Ihre zuverlässige Akkuhilfe für Elektroautos - Europaweit und darüber hinaus!</p>
-    <div class="cta">
-      <button onclick="scrollToSection('abo')">Jetzt Abonnieren</button>
+    <div class="video-container">
+      <video id="video" src="video2.mp4" autoplay muted loop></video>
+    </div>
+    <div class="hero-overlay">
+      <h2>Willkommen bei ChargeHERO</h2>
+      <p>Ihre zuverlässige Akkuhilfe für Elektroautos - Europaweit und darüber hinaus!</p>
     </div>
   </section>
 
-  <section id="map" class="map-container">
-    <h3>Wählen Sie Ihre Region</h3>
+  <section id="map-section" class="map-section">
+    <div class="sidebar">
+      <div class="button-container">
+        <button class="region-button" data-region="Europa" onclick="selectBundle(this, 100)">Europa</button>
+        <button class="region-button" data-region="Asien" onclick="selectBundle(this, 100)">Asien</button>
+        <button class="region-button" data-region="Nordamerika" onclick="selectBundle(this, 200)">Nordamerika</button>
+        <button class="region-button" data-region="Südamerika" onclick="selectBundle(this, 175)">Südamerika</button>
+        <button class="region-button" data-region="Ozeanien" onclick="selectBundle(this, 500)">Ozeanien</button>
+        <button class="region-button" data-region="Custom" onclick="selectCustom(this)">Custom</button>
+      </div>
+      <div id="price-display" class="price-display">Preis: 0 €</div>
+    </div>
     <div id="map"></div>
   </section>
 
-  <section id="abo" class="bundle-container">
-    <div class="bundle" data-region="Europa" onclick="selectBundle(this)">Europa</div>
-    <div class="bundle" data-region="USA" onclick="selectBundle(this)">USA</div>
-    <div class="bundle" data-region="Afrika" onclick="selectBundle(this)">Afrika</div>
-    <div class="bundle" data-region="Asien" onclick="selectBundle(this)">Asien</div>
-    <div class="bundle" data-region="Ozeanien" onclick="selectBundle(this)">Ozeanien</div>
-    <div class="bundle" data-region="Custom" onclick="selectBundle(this)">Custom</div>
-  </section>
-
-  <section id="form" class="form-container">
-    <h3>Abonnement abschließen</h3>
-    <form id="subscriptionForm">
-      <label for="type">Abrechnungstyp:</label>
-      <select id="type" name="type" required>
-        <option value="" disabled selected>Privat oder Unternehmen</option>
-        <option value="Privat">Privat</option>
-        <option value="Unternehmen">Unternehmen</option>
-      </select>
-      <button type="submit">Abonnieren</button>
-    </form>
+  <section id="country-list-section" class="country-list-section">
+    <h4>Ausgewählte Länder:</h4>
+    <p id="country-list">Keine Länder ausgewählt.</p>
   </section>
 
   <footer>

@@ -1,19 +1,186 @@
-const map = L.map('map').setView([0, 0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+const map = L.map('map', {
+    maxBounds: [
+      [-90, -180],
+      [90, 180],
+    ],
+    zoomControl: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    touchZoom: false,
+    dragging: false,
+    maxBoundsViscosity: 1.0,
+  }).setView([0, 0], 2);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+  }).addTo(map);
 
 let selectedCountry = null;
 let countryLayer;
+let totalCustomPrice = 40;
+let customCountries = [];
+let displayedCountries = "";
 
 // Regions
 const regionCountries = {
-  Europa: ['Germany', 'France', 'Italy', 'Spain', 'Poland'],
-  USA: ['United States'],
-  Afrika: ['Nigeria', 'Egypt', 'South Africa', 'Kenya'],
-  Asien: ['China', 'Japan', 'India', 'South Korea'],
-  Ozeanien: ['Australia', 'New Zealand']
-};
+    Europa: [
+      "Albania",
+      "Andorra",
+      "Austria",
+      "Belarus",
+      "Belgium",
+      "Bosnia and Herzegovina",
+      "Bulgaria",
+      "Croatia",
+      "Cyprus",
+      "Czech Republic",
+      "Denmark",
+      "Estonia",
+      "Finland",
+      "France",
+      "Germany",
+      "Greece",
+      "Hungary",
+      "Iceland",
+      "Ireland",
+      "Italy",
+      "Kosovo",            // teils anerkannt
+      "Latvia",
+      "Liechtenstein",
+      "Lithuania",
+      "Luxembourg",
+      "Malta",
+      "Moldova",
+      "Monaco",
+      "Montenegro",
+      "Netherlands",
+      "North Macedonia",
+      "Norway",
+      "Poland",
+      "Portugal",
+      "Romania",
+      "San Marino",
+      "Serbia",
+      "Slovakia",
+      "Slovenia",
+      "Spain",
+      "Sweden",
+      "Switzerland",
+      "Ukraine",
+      "United Kingdom",
+      "Vatican City"
+    ],
+  
+    Asien: [
+      "Afghanistan",
+      "Armenia",
+      "Azerbaijan",
+      "Bahrain",
+      "Bangladesh",
+      "Bhutan",
+      "Brunei",
+      "Cambodia",
+      "China",
+      "Georgia",
+      "India",
+      "Indonesia",
+      "Iran",
+      "Iraq",
+      "Israel",
+      "Japan",
+      "Jordan",
+      "Kazakhstan",
+      "Kuwait",
+      "Kyrgyzstan",
+      "Laos",
+      "Lebanon",
+      "Malaysia",
+      "Maldives",
+      "Mongolia",
+      "Myanmar",
+      "Nepal",
+      "North Korea",
+      "Oman",
+      "Pakistan",
+      "Philippines",
+      "Qatar",
+      "Russia",       // transkontinental
+      "Saudi Arabia",
+      "Singapore",
+      "South Korea",
+      "Sri Lanka",
+      "Syria",
+      "Taiwan",       // teils anerkannt
+      "Tajikistan",
+      "Thailand",
+      "Timor-Leste",
+      "Turkey",       // transkontinental
+      "Turkmenistan",
+      "United Arab Emirates",
+      "Uzbekistan",
+      "Vietnam",
+      "Yemen"
+    ],
+  
+    Nordamerika: [
+      "Antigua and Barbuda",
+      "Bahamas",
+      "Barbados",
+      "Belize",
+      "Canada",
+      "Costa Rica",
+      "Cuba",
+      "Dominica",
+      "Dominican Republic",
+      "El Salvador",
+      "Grenada",
+      "Guatemala",
+      "Haiti",
+      "Honduras",
+      "Jamaica",
+      "Mexico",
+      "Nicaragua",
+      "Panama",
+      "Saint Kitts and Nevis",
+      "Saint Lucia",
+      "Saint Vincent and the Grenadines",
+      "Trinidad and Tobago",
+      "United States of America"
+    ],
+  
+    Südamerika: [
+      "Argentina",
+      "Bolivia",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Ecuador",
+      "Guyana",
+      "Paraguay",
+      "Peru",
+      "Suriname",
+      "Uruguay",
+      "Venezuela"
+    ],
+  
+    Ozeanien: [
+      "Australia",
+      "Fiji",
+      "Kiribati",
+      "Marshall Islands",
+      "Micronesia",
+      "Nauru",
+      "New Zealand",
+      "Palau",
+      "Papua New Guinea",
+      "Samoa",
+      "Solomon Islands",
+      "Tonga",
+      "Tuvalu",
+      "Vanuatu"
+    ]
+  };
+  
 
 // GeoJSON
 fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
@@ -36,20 +203,22 @@ fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.g
   });
 
 // Select Bundle
-function selectBundle(element) {
-  document.querySelectorAll('.bundle').forEach(b => b.classList.remove('selected'));
+function selectBundle(element, price) {
+  resetSelection();
+  document.querySelectorAll('.region-button').forEach(b => b.classList.remove('selected'));
   element.classList.add('selected');
-  const region = element.dataset.region;
+  highlightRegion(element.dataset.region);
+  updatePrice(price);
+  updateCountryList(regionCountries[element.dataset.region]);
+}
 
-  if (region === 'Custom') {
-    document.getElementById('map').classList.add('active');
-    countryLayer.eachLayer(layer => countryLayer.resetStyle(layer));
-  } else {
-    highlightRegion(region);
-    document.getElementById('map').classList.remove('active');
-  }
-
-  document.getElementById('form').style.display = 'block';
+// Select Custom
+function selectCustom(element) {
+  resetSelection();
+  document.querySelectorAll('.region-button').forEach(b => b.classList.remove('selected'));
+  element.classList.add('selected');
+  document.getElementById('map').classList.add('active');
+  updatePrice(40);
 }
 
 // Highlight Region
@@ -70,10 +239,13 @@ function highlightRegion(region) {
 
 // Select Country
 function selectCountry(feature, layer) {
-  if (selectedCountry) {
-    countryLayer.resetStyle(selectedCountry);
+  const countryName = feature.properties.name;
+  if (!customCountries.includes(countryName)) {
+    customCountries.push(countryName);
+    totalCustomPrice += 15;
+    updatePrice(totalCustomPrice);
+    updateCountryList(customCountries);
   }
-  selectedCountry = layer.feature;
   layer.setStyle({
     color: 'blue',
     weight: 3,
@@ -81,7 +253,23 @@ function selectCountry(feature, layer) {
   });
 }
 
-// Smooth Scroll
-function scrollToSection(id) {
-  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+// Update Country List
+function updateCountryList(countries) {
+  const countryList = document.getElementById('country-list');
+  countryList.textContent = countries.length ? countries.join(', ') : 'Keine Länder ausgewählt.';
+}
+
+// Reset Selection
+function resetSelection() {
+  totalCustomPrice = 40;
+  customCountries = [];
+  displayedCountries = "";
+  countryLayer.eachLayer(layer => countryLayer.resetStyle(layer));
+  document.getElementById('map').classList.remove('active');
+}
+
+// Update Price Display
+function updatePrice(price) {
+  const priceDisplay = document.getElementById('price-display');
+  priceDisplay.textContent = `Preis: ${price} €`;
 }
