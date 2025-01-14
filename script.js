@@ -3,11 +3,11 @@ const map = L.map('map', {
       [-90, -180],
       [90, 180],
     ],
-    zoomControl: false,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    touchZoom: false,
-    dragging: false,
+    zoomControl: false,         // Entfernt die Zoom-Schaltflächen
+    scrollWheelZoom: true,     // Deaktiviert Zoomen per Mausrad
+    doubleClickZoom: false,     // Deaktiviert Zoomen per Doppelklick
+    touchZoom: false,           // Deaktiviert Zoomen per Touch-Geste (Mobil)
+    dragging: false,            // Deaktiviert das Verschieben der Karte
     maxBoundsViscosity: 1.0,
   }).setView([0, 0], 2);
   
