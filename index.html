@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChargeHERO - E-Auto Akkuhilfe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>ChargeHERO</h1>
+    <nav>
+      <a href="#map">Karte</a>
+      <a href="#abo">Abos</a>
+      <a href="#terms">AGB</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Willkommen bei ChargeHERO</h2>
+    <p>Ihre zuverlässige Akkuhilfe für Elektroautos - Europaweit und darüber hinaus!</p>
+    <div class="cta">
+      <button onclick="scrollToSection('abo')">Jetzt Abonnieren</button>
+    </div>
+  </section>
+
+  <section id="map" class="map-container">
+    <h3>Wählen Sie Ihre Region</h3>
+    <div id="map"></div>
+  </section>
+
+  <section id="abo" class="bundle-container">
+    <div class="bundle" data-region="Europa" onclick="selectBundle(this)">Europa</div>
+    <div class="bundle" data-region="USA" onclick="selectBundle(this)">USA</div>
+    <div class="bundle" data-region="Afrika" onclick="selectBundle(this)">Afrika</div>
+    <div class="bundle" data-region="Asien" onclick="selectBundle(this)">Asien</div>
+    <div class="bundle" data-region="Ozeanien" onclick="selectBundle(this)">Ozeanien</div>
+    <div class="bundle" data-region="Custom" onclick="selectBundle(this)">Custom</div>
+  </section>
+
+  <section id="form" class="form-container">
+    <h3>Abonnement abschließen</h3>
+    <form id="subscriptionForm">
+      <label for="type">Abrechnungstyp:</label>
+      <select id="type" name="type" required>
+        <option value="" disabled selected>Privat oder Unternehmen</option>
+        <option value="Privat">Privat</option>
+        <option value="Unternehmen">Unternehmen</option>
+      </select>
+      <button type="submit">Abonnieren</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>© 2025 ChargeHERO. Alle Rechte vorbehalten.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
