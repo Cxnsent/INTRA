@@ -5,9 +5,9 @@ const map = L.map('map', {
     ],
     zoomControl: false,         // Entfernt die Zoom-Schaltflächen
     scrollWheelZoom: true,     // Deaktiviert Zoomen per Mausrad
-    doubleClickZoom: false,     // Deaktiviert Zoomen per Doppelklick
-    touchZoom: false,           // Deaktiviert Zoomen per Touch-Geste (Mobil)
-    dragging: false,            // Deaktiviert das Verschieben der Karte
+    doubleClickZoom: true,     // Deaktiviert Zoomen per Doppelklick
+    touchZoom: true,           // Deaktiviert Zoomen per Touch-Geste (Mobil)
+    dragging: true,            // Deaktiviert das Verschieben der Karte
     maxBoundsViscosity: 1.0,
   }).setView([0, 0], 2);
   
@@ -15,12 +15,23 @@ const map = L.map('map', {
     attribution: '© OpenStreetMap contributors',
   }).addTo(map);
 
+let zoomTimer = null;
 let selectedCountry = null;
 let countryLayer;
 let totalCustomPrice = 40;
 let customCountries = [];
 let displayedCountries = "";
 
+// Map Zoomlevel zurücksetzen
+map.on("zoomend", () => {
+    if (map.getZoom() !== originalZoom) {
+        clearTimeout(zoomTimer);
+        zoomTimer = setTimeout(() => {
+            map.setView(originalCenter, originalZoom);
+          }, 7000);
+        }
+      });
+      
 // Regions
 const regionCountries = {
     Europa: [
